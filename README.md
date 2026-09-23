@@ -10,3 +10,5 @@
 6) Логин admin, пароль zubr2026.
 
 Если папка называется иначе, адрес менять не нужно — он определяется сам. Свои данные БД можно прописать в zubr-site-v2/config/config.php (образец: zubr-site-v2/config/config.example.php). Файл создаётся из образца при первом запуске.
+
+Ссылка на Google Диск: https://drive.google.com/drive/folders/1pctpI4TgP3kmCkyEBgRFMAw4X6r85ELX?usp=sharing
