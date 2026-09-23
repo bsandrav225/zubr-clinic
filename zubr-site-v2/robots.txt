@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+Disallow: /admin/
+Disallow: /api/
+Disallow: /data/
+Disallow: /includes/
+
+Sitemap: https://zubr-clinic.ru/sitemap.xml

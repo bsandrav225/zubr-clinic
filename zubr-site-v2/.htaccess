@@ -1,0 +1,92 @@
+# =========================================================
+#  Клиника «Зубр» — базовые SEO- и security-настройки
+# =========================================================
+
+# --- Кодировка и языки по умолчанию ---
+AddDefaultCharset UTF-8
+AddType font/ttf .ttf
+AddType font/woff2 .woff2
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # 1) HTTPS только на боевом домене. На XAMPP / localhost редирект не нужен.
+  RewriteCond %{HTTP_HOST} !^localhost [NC]
+  RewriteCond %{HTTP_HOST} !^127\.0\.0\.1
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https [NC]
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # 2) Единое написание домена: без www. (не трогаем localhost)
+  RewriteCond %{HTTP_HOST} !^localhost [NC]
+  RewriteCond %{HTTP_HOST} !^127\.0\.0\.1
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [L,R=301]
+
+  # 3) Старые HTML-страницы услуг → актуальные PHP-адреса (относительные пути)
+  RewriteRule ^services/treatment\.html$ services/service_template.php?service=%D0%9B%D0%B5%D1%87%D0%B5%D0%BD%D0%B8%D0%B5+%D0%B7%D1%83%D0%B1%D0%BE%D0%B2 [R=301,L]
+  RewriteRule ^services/extraction\.html$ services/service_template.php?service=%D0%A3%D0%B4%D0%B0%D0%BB%D0%B5%D0%BD%D0%B8%D0%B5+%D0%B7%D1%83%D0%B1%D0%BE%D0%B2 [R=301,L]
+  RewriteRule ^services/cleaning\.html$ services/service_template.php?service=%D0%A7%D0%B8%D1%81%D1%82%D0%BA%D0%B0+%D0%B7%D1%83%D0%B1%D0%BE%D0%B2 [R=301,L]
+  RewriteRule ^services/whitening\.html$ services/service_template.php?service=%D0%9E%D1%82%D0%B1%D0%B5%D0%BB%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5 [R=301,L]
+  RewriteRule ^services/kids\.html$ services/service_template.php?service=%D0%94%D0%B5%D1%82%D1%81%D0%BA%D0%B8%D0%B9+%D0%BF%D1%80%D0%B8%D1%91%D0%BC [R=301,L]
+
+  # 4) Запрет прямого доступа к каталогу config
+  RewriteRule ^config/ - [F,L]
+
+  # 5) Своя 404 внутри этой папки (работает и в /zubr/zubr-site-v2/, и в корне домена)
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^ 404.php [L]
+</IfModule>
+
+# --- Запрет листинга директорий ---
+Options -Indexes
+
+# --- Защита служебных и конфиденциальных файлов от прямого доступа ---
+<FilesMatch "\.(sql|json|log|env|md|ini|bak|sh)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+<Files ".htaccess">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Deny from all
+  </IfModule>
+</Files>
+
+# --- Базовые security-заголовки (полезно и для доверия поисковиков) ---
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# --- Сжатие текстовых ответов (влияет на скорость загрузки — фактор ранжирования) ---
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# --- Кэширование статики в браузере ---
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType text/css "access plus 1 month"
+  ExpiresByType application/javascript "access plus 1 month"
+  ExpiresByType image/jpeg "access plus 1 year"
+  ExpiresByType image/png "access plus 1 year"
+  ExpiresByType image/webp "access plus 1 year"
+  ExpiresByType image/svg+xml "access plus 1 year"
+  ExpiresByType font/ttf "access plus 1 year"
+  ExpiresByType application/xml "access plus 1 day"
+  ExpiresByType text/plain "access plus 1 day"
+</IfModule>
+
+# Страница 404 задаётся правилом RewriteRule выше — так путь не привязан к корню домена.
