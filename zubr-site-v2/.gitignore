@@ -1,0 +1,11 @@
+# Локальная конфигурация с паролями
+config/config.php
+
+# Загруженные пользователями файлы
+uploads/*
+!uploads/.htaccess
+
+# Системные и временные файлы
+.DS_Store
+Thumbs.db
+*.log

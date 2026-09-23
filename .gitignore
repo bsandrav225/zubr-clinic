@@ -1,0 +1,19 @@
+# Локальные секреты и окружение
+.env
+*.log
+_hash.txt
+
+# Конфиг с паролями (создаётся из example при первом запуске)
+zubr-site-v2/config/config.php
+
+# Загрузки пользователей
+zubr-site-v2/uploads/*
+!zubr-site-v2/uploads/.htaccess
+
+# Системные и IDE-файлы
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.tmp
